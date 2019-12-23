@@ -4,15 +4,19 @@ services:
 
   api:
     build: ./api
+    restart: always
     ports:
       - "5000:5000"
     volumes:
       - ./api/app:/app
+      - ./icons:/icons
 
   web:
     build: ./web
+    restart: always
     ports:
       - "8080:3000"
     volumes:
-      - ./web/app/src:/app/src
-      - ./web/app/public:/app/public
+      - ./web/app:/app
+    environment: 
+      - CHOKIDAR_USEPOLLING=true

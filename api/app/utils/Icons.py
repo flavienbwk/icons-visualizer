@@ -1,6 +1,10 @@
 from typing import Union, Dict
 import glob
 import os
+import sys
+
+sys.path.append('..')
+import config
 
 class Icons():
 
@@ -70,7 +74,7 @@ class Icons():
         nb_images_processed = 0
         images = []
         for icon_type in ["png", "jpeg", "jpg", "gif"]:
-            uri = self.abs_path + "/icons/*." + icon_type
+            uri = config.ICONS_DIRECTORY + "/*." + icon_type
             images.extend(glob.glob(uri))
         if (len(images)):
             for image_path in images:

@@ -1,8 +1,9 @@
 from flask import Flask, request, send_file, abort
 from flask_restplus import Api, Resource
+import sys
 
 import config
-from icons import Icons
+from utils.Icons import Icons
 from utils.ApiResponse import ApiResponse
 
 app = Flask(__name__)
@@ -16,7 +17,7 @@ class Home(Resource):
     def get(self):
         apiResponse = ApiResponse()
         apiResponse.setAll(False, "Everything's up and running", {
-            "nb_images": 0
+            "nb_images": len(icons.getImagesData())
         })
         return apiResponse.getResponse()
 
@@ -47,9 +48,14 @@ class Icon(Resource):
 def get_image(icon_filename):
     icon = icons.getImageData(icon_filename)
     if (icon):
-        filename = icons.abs_path + "/icons/" + icon_filename
+        filename = config.ICONS_DIRECTORY + "/" + icon_filename
         return send_file(filename, mimetype='image/' + icon["extension"])
     abort(404)
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host="0.0.0.0")

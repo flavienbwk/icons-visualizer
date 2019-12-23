@@ -1,8 +1,8 @@
 # Icons Visualizer
 
-__UNDER ACTIVE DEVELOPMENT__
-
 A quick and simple UI and API to search and display icons. Can be used in an offline environment thanks to Docker.
+
+![Interface example](./interface.png)
 
 Written in Python (Flask RESTPlus / Swagger) and ReactJS.
 

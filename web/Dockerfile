@@ -1,8 +1,6 @@
-FROM node:13.0.1
+FROM node:13.0.1-alpine
 
 WORKDIR '/app'
 
-COPY ./app/package.json /app/package.json
-RUN npm install
-
-CMD [ "npm", "run", "start" ]
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]
