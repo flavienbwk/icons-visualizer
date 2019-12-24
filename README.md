@@ -1,8 +1,12 @@
 # Icons Visualizer
 
 <p align="center">
-[![Travis CI](https://travis-ci.org/flavienbwk/icons-visualizer.svg?branch=master)](https://travis-ci.org/flavienbwk/icons-visualizer)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+    <a href="https://travis-ci.org/flavienbwk/icons-visualizer" target="_blank">
+        <img src="https://travis-ci.org/flavienbwk/icons-visualizer.svg?branch=master"/>
+    </a>
+    <a href="https://opensource.org/licenses/MIT" target="_blank">
+        <img src="https://img.shields.io/badge/License-MIT-yellow.svg">
+    </a>
 </p>
 
 A quick and simple UI and API to search and display icons. Can be used in an offline environment thanks to Docker.
