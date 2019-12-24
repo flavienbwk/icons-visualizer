@@ -1,7 +1,7 @@
 # Icons Visualizer
 
 <p align="center">
-<img src="https://travis-ci.org/flavienbwk/icons-visualizer?branch=master"/>
+<img src="https://travis-ci.org/flavienbwk/icons-visualizer.svg?branch=master"/>
 </p>
 
 A quick and simple UI and API to search and display icons. Can be used in an offline environment thanks to Docker.
