@@ -5,11 +5,19 @@ import styled from 'styled-components';
 import Icons from './components/Icons'
 
 const Styles = styled.div`
+    .paddind-bottom {
+        padding-bottom: 16px;
+    }
+
     .center {
         width: fit-content;
         text-align: center;
         margin: 1em auto;
         display: table;
+    }
+
+    .center-text {
+        text-align: center;
     }
 
     .main-search-bar {
@@ -62,7 +70,7 @@ class Home extends Component {
         return (
             <Styles>
                 <Container>
-                    <Row>
+                    <Row className="paddind-bottom">
                         <Col lg={{ span: 12 }} className="center">
                             <Form.Control
                                 type="text"
@@ -84,13 +92,11 @@ class Home extends Component {
                             </Form.Control>
                         </Col>
                     </Row>
-                    <Row className="center">
-                        <Icons
-                            key={this.state.query + this.state.limit}
-                            query={this.state.query}
-                            limit={this.state.limit}
-                        />
-                    </Row>
+                    <Icons
+                        key={this.state.query + this.state.limit}
+                        query={this.state.query}
+                        limit={this.state.limit}
+                    />
                 </Container>
             </Styles>
         )
