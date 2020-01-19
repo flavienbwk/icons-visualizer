@@ -16,10 +16,6 @@ const Styles = styled.div`
         display: table;
     }
 
-    .center-text {
-        text-align: center;
-    }
-
     .main-search-bar {
         padding: 32px;
         margin-top: 32px;
