@@ -1,6 +1,7 @@
 from typing import Union, Dict, List
 import os
 import sys
+from operator import countOf
 from .utils import list_rglob_files
 
 sys.path.append('..')
@@ -27,7 +28,7 @@ class Icons():
                 True if the processing of the image succeeded.
                 False otherwise.
         """
-        keywords = self.getKeywordsFromFilename(image_info["filename"])
+        keywords = self.getKeywordsFromFilename(image_info["path"])
         if (len(keywords)):
             self.keywords_images[0].append(keywords)
             self.keywords_images[1].append({
@@ -48,12 +49,14 @@ class Icons():
         Returns:
             str: The image's keywords separated by a whitespace.
         """
-        keywords = filename
+        keywords_str = filename
         p_filename = filename
-        replace_chars="_-."
+        replace_chars="_-./"
         for c in replace_chars:
             p_filename = p_filename.replace(c, " ")
-        keywords += " " + p_filename + " " + p_filename.lower() + " " + p_filename.upper()
+        keywords_str += " " + p_filename + " " + p_filename.lower() + " " + p_filename.upper()
+        keywords = keywords_str.split(' ')
+        keywords.append(keywords_str)
         return keywords
 
     def updateImages(self) -> int:
@@ -103,14 +106,17 @@ class Icons():
             file_hash = self.keywords_images[1][key]["id"]
             query_tokens = query.split(' ')
             for query_token in query_tokens:
-                score += 1 if (query_token in keywords) else 0
+                score += countOf(keywords, query_token) + keywords[0].count(query_token)
+                score += 1 if query_token in keywords[0] else 0
             if (score > 0):
-                ranking[file_hash] = (ranking[file_hash] + 1) if (file_hash in ranking) else 1
+                ranking[file_hash] = (ranking[file_hash] + score) if (file_hash in ranking) else score
         if (len(ranking) > 0):
             ranking_sorted = sorted(ranking, key=ranking.__getitem__, reverse=True)
             nb_processed = 0
             while (nb_processed < limit and nb_processed < len(ranking_sorted)):
-                ranking_sorted_returned.append(self.filterImageData(self.images_data[ranking_sorted[nb_processed]]))
+                ranking_sorted_returned.append(self.filterImageData(
+                    self.images_data[ranking_sorted[nb_processed]]
+                ))
                 nb_processed+=1
         return ranking_sorted_returned
 
