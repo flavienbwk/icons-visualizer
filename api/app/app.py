@@ -1,10 +1,18 @@
-from flask import Flask, request, send_file, abort
-from flask_restplus import Api, Resource
-import sys
+from flask import Flask, Response, send_from_directory, abort
+import magic
+
+# Workaround for werkzeug issue (https://github.com/jarus/flask-testing/issues/143#issuecomment-750885274)
+try:
+    from flask_restplus import Resource, Api
+except ImportError:
+    import werkzeug
+    werkzeug.cached_property = werkzeug.utils.cached_property
+    from flask_restplus import Resource, Api
 
 import config
 from utils.Icons import Icons
 from utils.ApiResponse import ApiResponse
+
 
 app = Flask(__name__)
 api = Api(app, title=config.FLASK_SERVER_NAME, description=config.FLASK_SERVER_DESCRIPTION)
@@ -21,17 +29,19 @@ class Home(Resource):
         })
         return apiResponse.getResponse()
 
-@api.route('/api/icon/<string:icon_filename>')
+
+@api.route('/api/icon/<string:icon_hash>')
 class Icon(Resource):
-    def get(self, icon_filename):
+    def get(self, icon_hash):
         apiResponse = ApiResponse()
-        icon = icons.getImageData(icon_filename)
+        icon = icons.getImageData(icon_hash)
         if (icon):
-            icon.update({"request": icon_filename})
+            icon.update({"request": icon_hash})
             apiResponse.setAll(False, "Image found", icon)
         else:
-            apiResponse.setAll(True, "Image not found", {"request": icon_filename})
+            apiResponse.setAll(True, "Image not found", {"request": icon_hash})
         return apiResponse.getResponse()
+
 
 @api.route('/api/icons', defaults={'query': None, 'limit': 50})
 @api.route('/api/icons/<string:query>/<int:limit>')
@@ -44,13 +54,20 @@ class Icon(Resource):
         apiResponse.setDetails(icons_found)
         return apiResponse.getResponse()
 
-@app.route('/icon/<string:icon_filename>')
-def get_image(icon_filename):
-    icon = icons.getImageData(icon_filename)
+
+@app.route('/icon/<string:icon_hash>')
+def get_image(icon_hash):
+    icon = icons.getImageData(icon_hash)
     if (icon):
-        filename = config.ICONS_DIRECTORY + "/" + icon_filename
-        return send_file(filename, mimetype='image/' + icon["extension"])
+        mime_type = magic.from_file(icon["path"], mime=True)
+        return send_from_directory(
+            icon["parent"],
+            icon["filename"],
+            mimetype=mime_type if icon["extension"] != "svg" else "image/svg+xml",
+            as_attachment=True
+        )
     abort(404)
+
 
 @app.after_request
 def after_request(response):

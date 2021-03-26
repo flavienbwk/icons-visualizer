@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { Row, Col, Card } from 'react-bootstrap';
-import PropTypes from 'prop-types';
+import { Row, Col, Card } from 'react-bootstrap'
+import PropTypes from 'prop-types'
+import tersus from 'tersus-jsx.macro'
 
 export default class Icons extends Component {
 
@@ -18,7 +19,6 @@ export default class Icons extends Component {
     getIconsFromQuery = () => {
         const query = this.props.query.trim()
         if (query) {
-            console.log(this.props)
             fetch('http://localhost:5000/api/icons/' + query + '/' + this.props.limit)
                 .then(res => res.json())
                 .then((data) => {
@@ -38,7 +38,7 @@ export default class Icons extends Component {
     }
 
     render() {
-        return (
+        return tersus(
             (this.state.icons.length)
                 ?
                 <Row className="center-text">
@@ -53,21 +53,25 @@ export default class Icons extends Component {
                     {
                         this.state.icons.map((icon) => {
                             return (
-                                <Col lg={{ span: 3 }} key={icon} style={{ marginTop: 16 }}>
+                                <Col lg={{ span: 3 }} key={icon.id} style={{ marginTop: 16 }}>
                                     <Card>
                                         <Card.Img
                                             variant="top"
-                                            src={"http://localhost:5000/icon/" + icon}
+                                            src={"http://localhost:5000/icon/" + icon.id}
                                             className={"center"}
                                             style={{ width: 64 }}
                                         />
                                         <Card.Body>
                                             <Card.Text>
-                                                {icon}
+                                                {icon.filename}
                                             </Card.Text>
-                                            <a className={"btn btn-secondary"} href={"http://localhost:5000/icon/" + icon} download>
+                                            <a
+                                                className={"btn btn-secondary"}
+                                                href={"http://localhost:5000/icon/" + icon.id}
+                                                download
+                                            >
                                                 Download
-                                                </a>
+                                            </a>
                                         </Card.Body>
                                     </Card>
                                 </Col>

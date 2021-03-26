@@ -1,10 +1,11 @@
-from typing import Union, Dict
-import glob
+from typing import Union, Dict, List
 import os
 import sys
+from .utils import list_rglob_files
 
 sys.path.append('..')
 import config
+
 
 class Icons():
 
@@ -13,7 +14,7 @@ class Icons():
         self.keywords_images = [[], []]
         self.images_data = {}
 
-    def processImage(self, path) -> bool:
+    def processImage(self, image_info) -> bool:
         """
         Finds keywords and image info from its path
         and stores them in the classe's attributes.
@@ -26,12 +27,14 @@ class Icons():
                 True if the processing of the image succeeded.
                 False otherwise.
         """
-        image_info = self.formatImageInfo(path)
         keywords = self.getKeywordsFromFilename(image_info["filename"])
         if (len(keywords)):
             self.keywords_images[0].append(keywords)
-            self.keywords_images[1].append(image_info["filename"])
-            self.images_data[image_info["filename"]] = image_info
+            self.keywords_images[1].append({
+                "id": image_info["id"],
+                "filename": image_info["filename"]
+            })
+            self.images_data[image_info["id"]] = image_info
             return True
         return False
 
@@ -50,16 +53,8 @@ class Icons():
         replace_chars="_-."
         for c in replace_chars:
             p_filename = p_filename.replace(c, " ")
-        keywords += " " + p_filename
+        keywords += " " + p_filename + " " + p_filename.lower() + " " + p_filename.upper()
         return keywords
-
-    def formatImageInfo(self, path) -> {"filename": str, "extension": str}:
-        filename = os.path.basename(path)
-        _, extension = os.path.splitext(filename)
-        return {
-            "filename": filename,
-            "extension": extension,
-        }
 
     def updateImages(self) -> int:
         """
@@ -72,17 +67,20 @@ class Icons():
         self.keywords_images = [[], []]
         self.images_data = {}
         nb_images_processed = 0
-        images = []
-        for icon_type in ["png", "jpeg", "jpg", "gif"]:
-            uri = config.ICONS_DIRECTORY + "/*." + icon_type
-            images.extend(glob.glob(uri))
+        images = list_rglob_files(config.ICONS_DIRECTORY, [
+            "*.png",
+            "*.jpeg",
+            "*.jpg",
+            "*.gif",
+            "*.svg"
+        ])
         if (len(images)):
-            for image_path in images:
-                if (self.processImage(image_path)):
+            for image_details in images:
+                if (self.processImage(image_details)):
                     nb_images_processed+=1
         return nb_images_processed
 
-    def searchImages(self, query: str, limit: 40) -> [str]:
+    def searchImages(self, query: str, limit: 50) -> List[str]:
         """
         Returns a list of images corresponding to the query.
         Breaks down the query to compute a score depending
@@ -93,7 +91,7 @@ class Icons():
             limit (int): The maximum number of images to return
 
         Returns:
-            [{"filename": str, "extension": str}]:
+            [{"id": str, "filename": str, "extension": str}]:
                 A list of images corresponding to the query.
         """
         ranking = {}
@@ -102,22 +100,29 @@ class Icons():
         for key in range(0, len(self.keywords_images[0])):
             score = 0
             keywords = self.keywords_images[0][key]
-            filename = self.keywords_images[1][key]
+            file_hash = self.keywords_images[1][key]["id"]
             query_tokens = query.split(' ')
             for query_token in query_tokens:
                 score += 1 if (query_token in keywords) else 0
             if (score > 0):
-                ranking[filename] = (ranking[filename] + 1) if (filename in ranking) else 1
+                ranking[file_hash] = (ranking[file_hash] + 1) if (file_hash in ranking) else 1
         if (len(ranking) > 0):
             ranking_sorted = sorted(ranking, key=ranking.__getitem__, reverse=True)
             nb_processed = 0
             while (nb_processed < limit and nb_processed < len(ranking_sorted)):
-                ranking_sorted_returned.append(ranking_sorted[nb_processed])
+                ranking_sorted_returned.append(self.filterImageData(self.images_data[ranking_sorted[nb_processed]]))
                 nb_processed+=1
         return ranking_sorted_returned
 
-    def getImageData(self, image_name) -> Union[Dict[str, str], None]:
-        return self.images_data[image_name] if (image_name in self.images_data) else None
+    def filterImageData(self, image_data):
+        return {
+            "id": image_data["id"],
+            "filename": image_data["filename"],
+            "extension": image_data["extension"]
+        }
+
+    def getImageData(self, image_hash) -> Union[Dict[str, str], None]:
+        return self.images_data[image_hash] if (image_hash in self.images_data) else None
     
-    def getImagesData(self) -> {}:
+    def getImagesData(self) -> Dict[str, str]:
         return self.images_data

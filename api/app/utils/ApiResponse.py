@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Union, Any
 
 class ApiResponse():
     """
@@ -25,7 +25,7 @@ class ApiResponse():
     def setDetails(self, details: dict) -> None:
         self.details = details
 
-    def getResponse(self) -> {"error": bool, "message": str, "details": {}}:
+    def getResponse(self) -> Dict[str, Union[str, Any]]:
         return {
             "error": self.error,
             "message": self.message,
