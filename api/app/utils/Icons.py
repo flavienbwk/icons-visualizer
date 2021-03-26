@@ -28,7 +28,7 @@ class Icons():
                 True if the processing of the image succeeded.
                 False otherwise.
         """
-        keywords = self.getKeywordsFromFilename(image_info["path"])
+        keywords = self.getKeywordsFromFileInfo(image_info)
         if (len(keywords)):
             self.keywords_images[0].append(keywords)
             self.keywords_images[1].append({
@@ -39,24 +39,25 @@ class Icons():
             return True
         return False
 
-    def getKeywordsFromFilename(self, filename) -> str:
+    def getKeywordsFromFileInfo(self, image_info) -> List:
         """
-        Deducts the image's keywords from its filename.
+        Deducts the image's keywords from its filename, path, extension...
 
         Args:
-            filename (str): The image's filename
+            image_info (str): The image's filename
 
         Returns:
-            str: The image's keywords separated by a whitespace.
+            list: The image keywords
         """
-        keywords_str = filename
-        p_filename = filename
+        keywords_str = image_info["path"]
+        part_filename = image_info["path"]
         replace_chars="_-./"
         for c in replace_chars:
-            p_filename = p_filename.replace(c, " ")
-        keywords_str += " " + p_filename + " " + p_filename.lower() + " " + p_filename.upper()
+            part_filename = part_filename.replace(c, " ")
+            keywords_str += " " + part_filename + " " + part_filename.lower() + " " + part_filename.upper()
         keywords = keywords_str.split(' ')
         keywords.append(keywords_str)
+        keywords.append(image_info["filename"])
         return keywords
 
     def updateImages(self) -> int:
@@ -106,17 +107,16 @@ class Icons():
             file_hash = self.keywords_images[1][key]["id"]
             query_tokens = query.split(' ')
             for query_token in query_tokens:
-                score += countOf(keywords, query_token) + keywords[0].count(query_token)
-                score += 1 if query_token in keywords[0] else 0
+                score += countOf(keywords, query_token)
+                score += keywords[len(keywords) - 1].count(query_token)
             if (score > 0):
                 ranking[file_hash] = (ranking[file_hash] + score) if (file_hash in ranking) else score
         if (len(ranking) > 0):
             ranking_sorted = sorted(ranking, key=ranking.__getitem__, reverse=True)
             nb_processed = 0
             while (nb_processed < limit and nb_processed < len(ranking_sorted)):
-                ranking_sorted_returned.append(self.filterImageData(
-                    self.images_data[ranking_sorted[nb_processed]]
-                ))
+                returned_data = self.images_data[ranking_sorted[nb_processed]]
+                ranking_sorted_returned.append(self.filterImageData(returned_data))
                 nb_processed+=1
         return ranking_sorted_returned
 
