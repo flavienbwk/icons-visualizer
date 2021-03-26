@@ -17,8 +17,10 @@ from utils.ApiResponse import ApiResponse
 app = Flask(__name__)
 api = Api(app, title=config.FLASK_SERVER_NAME, description=config.FLASK_SERVER_DESCRIPTION)
 
+print("Loading icon keywords...", flush=True)
 icons = Icons()
 icons.updateImages()
+print("Finished with {} icons. Starting...".format(len(icons.getImagesData())), flush=True)
 
 @api.route('/api')
 class Home(Resource):
