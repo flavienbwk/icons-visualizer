@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react'
+import React, { Component, useState, useEffect, useRef } from 'react'
 import { Container, Row, Col, Form } from 'react-bootstrap';
 import styled from 'styled-components';
 
@@ -34,6 +34,7 @@ const Styles = styled.div`
  * stopped typing (during 400 ms).
  */
 function Search(props) {
+    const prevProps = useRef(props); // react-hooks/exhaustive-deps
     const [searchTerm, setSearchTerm] = useState('')
 
     useEffect(() => {
@@ -41,8 +42,9 @@ function Search(props) {
             props.onQueryChange(searchTerm)
         }, 400)
 
+        prevProps.current = props
         return () => clearTimeout(delayDebounceFn)
-        }, [searchTerm]
+        }, [searchTerm, props]
     )
 
     return (
