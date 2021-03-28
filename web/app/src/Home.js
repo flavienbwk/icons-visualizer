@@ -1,8 +1,9 @@
-import React, { Component } from 'react'
+import React, { Component, useState, useEffect } from 'react'
 import { Container, Row, Col, Form } from 'react-bootstrap';
 import styled from 'styled-components';
 
 import Icons from './components/Icons'
+
 
 const Styles = styled.div`
     .paddind-bottom {
@@ -27,6 +28,35 @@ const Styles = styled.div`
     }
 `
 
+
+/**
+ * Allows to perform search only when user
+ * stopped typing (during 400 ms).
+ */
+function Search(props) {
+    const [searchTerm, setSearchTerm] = useState('')
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            props.onQueryChange(searchTerm)
+        }, 400)
+
+        return () => clearTimeout(delayDebounceFn)
+        }, [searchTerm]
+    )
+
+    return (
+        <Form.Control
+            type="text"
+            placeholder={"Search " + props.nb_icons + " icons for..."}
+            className={"main-search-bar"}
+            onChange={(e) => setSearchTerm(e.target.value)}
+        />
+    )
+}
+
+
+// Main component
 class Home extends Component {
 
     constructor(props) {
@@ -54,9 +84,9 @@ class Home extends Component {
             .catch(console.error)
     }
 
-    onInputChange = (event) => {
+    onQueryChange = (query) => {
         this.setState({
-            "query": event.target.value
+            "query": query
         })
     }
 
@@ -72,11 +102,9 @@ class Home extends Component {
                 <Container>
                     <Row className="paddind-bottom">
                         <Col lg={{ span: 12 }} className="center">
-                            <Form.Control
-                                type="text"
-                                placeholder={"Search " + this.state.nb_icons + " icons for..."}
-                                className={"main-search-bar"}
-                                onChange={this.onInputChange}
+                            <Search
+                                nb_icons={this.state.nb_icons}
+                                onQueryChange={this.onQueryChange}
                             />
                         </Col>
                         <Col lg={{ span: 2, offset: 10 }}>

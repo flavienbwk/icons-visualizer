@@ -17,7 +17,7 @@ export default class Icons extends Component {
     }
 
     getIconsFromQuery = () => {
-        const query = this.props.query.trim()
+        const query = this.props.query?.trim()
         if (query) {
             fetch('http://localhost:5000/api/icons/' + query + '/' + this.props.limit)
                 .then(res => res.json())
