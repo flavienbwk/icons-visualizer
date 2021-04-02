@@ -14,6 +14,7 @@ class Icons():
         self.abs_path = os.path.dirname(os.path.abspath(__file__))
         self.keywords_images = [[], []]
         self.images_data = {}
+        self.keyword_delimiters=" _-./()"
 
     def processImage(self, image_info) -> bool:
         """
@@ -44,20 +45,24 @@ class Icons():
         Deducts the image's keywords from its filename, path, extension...
 
         Args:
-            image_info (str): The image's filename
+            image_info (object): The image details
 
         Returns:
             list: The image keywords
         """
-        keywords_str = image_info["path"]
-        part_filename = image_info["path"]
-        replace_chars="_-./"
-        for c in replace_chars:
-            part_filename = part_filename.replace(c, " ")
-            keywords_str += " " + part_filename + " " + part_filename.lower() + " " + part_filename.upper()
-        keywords = keywords_str.split(' ')
-        keywords.append(keywords_str)
-        keywords.append(image_info["filename"])
+        keywords = []
+        parts = [
+            image_info["path"],
+            image_info["filename"],
+            image_info["filename"],
+            image_info["filename"].lower(),
+            image_info["filename"].upper()
+        ]
+
+        parts_str = ' '.join(parts)
+        for delimiter in self.keyword_delimiters:
+            keywords = keywords + parts_str.split(delimiter)
+        
         return keywords
 
     def updateImages(self) -> int:
@@ -101,6 +106,9 @@ class Icons():
         ranking = {}
         ranking_sorted = []
         ranking_sorted_returned = []
+
+        # Browse each file keywords and compute their matching
+        # score for the search query submitted.
         for key in range(0, len(self.keywords_images[0])):
             score = 0
             keywords = self.keywords_images[0][key]
@@ -111,6 +119,8 @@ class Icons():
                 score += keywords[len(keywords) - 1].count(query_token)
             if (score > 0):
                 ranking[file_hash] = (ranking[file_hash] + score) if (file_hash in ranking) else score
+
+        # If match are found, sort them by score
         if (len(ranking) > 0):
             ranking_sorted = sorted(ranking, key=ranking.__getitem__, reverse=True)
             nb_processed = 0
