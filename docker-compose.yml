@@ -4,18 +4,22 @@ services:
 
   api:
     build: ./api
+    image: flavienb/icons-visualizer-api:develop
     restart: always
     ports:
       - "5000:5000"
     volumes:
       - ./api/app:/app
-      - ./icons:/icons
+      - ./icons:/icons:ro
 
   web:
     build: ./web
+    image: flavienb/icons-visualizer-web:develop
     restart: always
     ports:
       - "8080:3000"
+    env_file:
+      - .env
     volumes:
       - ./web/app:/app
     environment: 

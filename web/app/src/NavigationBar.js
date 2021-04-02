@@ -2,7 +2,6 @@ import React from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import packageJson from '../package.json';
 
 const Styles = styled.div`
     .navbar {
@@ -30,7 +29,7 @@ export const NavigationBar = () => (
             <Navbar.Brand as={Link} to={'/'}>
                 <img
                     alt="Logo Icons Visualizer"
-                    src={packageJson["homepage"] + "/logo.png"}
+                    src={"/logo.png"}
                     className="d-inline-block align-top brand-image"
                 />
                 {'Icons Visualizer'}

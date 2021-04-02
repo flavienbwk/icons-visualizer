@@ -25,7 +25,7 @@ export default class Icons extends Component {
         const query = this.props.query.trim()
         if (query) {
             this.setState({ "querying": true })
-            fetch('http://localhost:5000/api/icons/' + query + '/' + this.props.limit)
+            fetch(process.env.REACT_APP_API_ENDPOINT + '/api/icons/' + query + '/' + this.props.limit)
                 .then(res => res.json())
                 .then((data) => {
                     if (!data.error && data.details.length) {
@@ -79,7 +79,7 @@ export default class Icons extends Component {
                                         <Card>
                                             <Card.Img
                                                 variant="top"
-                                                src={"http://localhost:5000/icon/" + icon.id}
+                                                src={process.env.REACT_APP_API_ENDPOINT + "/icon/" + icon.id}
                                                 className={"center"}
                                                 style={{ width: 64 }}
                                             />
@@ -89,7 +89,7 @@ export default class Icons extends Component {
                                                 </Card.Text>
                                                 <a
                                                     className={"btn btn-secondary"}
-                                                    href={"http://localhost:5000/icon/" + icon.id}
+                                                    href={process.env.REACT_APP_API_ENDPOINT + "/icon/" + icon.id}
                                                     download
                                                 >
                                                     Download

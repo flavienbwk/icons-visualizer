@@ -1,16 +1,15 @@
 import React from 'react';
-import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Home from './Home';
 import { About } from './About';
 import { Layout } from './Layout';
 import { NavigationBar } from './NavigationBar';
-import packageJson from '../package.json';
 
 function App() {
 
     return (
         <React.Fragment>
-            <Router basename={packageJson["homepage"] + "/"}>
+            <Router basename={"/"}>
                 <NavigationBar />
                 <Layout>
                     <Switch>
