@@ -4,6 +4,8 @@ services:
 
   api:
     build:
+      args:
+        FLASK_ENV: production
       context: ./api
       dockerfile: prod.Dockerfile
     image: flavienb/icons-visualizer-api:latest
@@ -12,8 +14,6 @@ services:
       - "5000:5000"
     volumes:
       - ./icons:/icons:ro
-    environment:
-      FLASK_ENV: production
 
   web:
     build:
