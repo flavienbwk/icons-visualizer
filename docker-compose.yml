@@ -22,5 +22,3 @@ services:
       - .env
     volumes:
       - ./web/app:/app
-    environment: 
-      - CHOKIDAR_USEPOLLING=true

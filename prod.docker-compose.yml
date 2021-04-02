@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+
+  api:
+    build:
+      context: ./api
+      dockerfile: prod.Dockerfile
+    image: flavienb/icons-visualizer-api:latest
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./icons:/icons:ro
+    environment:
+      FLASK_ENV: production
+
+  web:
+    build:
+      args:
+        NODE_ENV: production
+        REACT_APP_API_ENDPOINT: ${REACT_APP_API_ENDPOINT}
+      context: ./web
+      dockerfile: prod.Dockerfile
+    image: flavienb/icons-visualizer-web:latest
+    restart: always
+    ports:
+      - "8080:80"
+    env_file:
+      - .env

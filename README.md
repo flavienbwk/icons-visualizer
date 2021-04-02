@@ -21,10 +21,18 @@ First, import the icons you want in the `icons/` directory.
 
 :warning: **The names of your files** are very important : the search engine is based on filenames to find keywords as you type the icon you're looking for in the UI searchbar.
 
-You now just have to run :
+### Build for dev
 
-```do
+```bash
 docker-compose up -d
+```
+
+You can access the UI at `localhost:8080`
+
+### Build for prod
+
+```bash
+docker-compose -f prod.docker-compose.yml up -d
 ```
 
 You can access the UI at `localhost:8080`
