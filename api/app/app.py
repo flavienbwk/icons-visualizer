@@ -57,7 +57,7 @@ class Icon(Resource):
         return apiResponse.getResponse()
 
 
-@app.route('/icon/<string:icon_hash>')
+@app.route('/api/file/<string:icon_hash>')
 def get_image(icon_hash):
     icon = icons.getImageData(icon_hash)
     if (icon):

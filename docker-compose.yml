@@ -1,4 +1,4 @@
-version: "3"
+version: "3.3"
 
 services:
 
@@ -6,8 +6,6 @@ services:
     build: ./api
     image: flavienb/icons-visualizer-api:develop
     restart: always
-    ports:
-      - "5000:5000"
     volumes:
       - ./api/app:/app
       - ./icons:/icons:ro
@@ -16,9 +14,20 @@ services:
     build: ./web
     image: flavienb/icons-visualizer-web:develop
     restart: always
-    ports:
-      - "8080:3000"
     env_file:
       - .env
     volumes:
       - ./web/app:/app
+
+  # We set-up an NGINX to have a unique endpoint for app & api
+  nginx:
+    build:
+      context: nginx
+      dockerfile: Dockerfile
+    image: flavienb/icons-visualizer-nginx:develop
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/icons-visualizer.conf:/etc/nginx/conf.d/icons-visualizer.conf:ro
+      - ./logs:/var/log/nginx

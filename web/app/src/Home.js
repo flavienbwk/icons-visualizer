@@ -72,7 +72,7 @@ class Home extends Component {
     }
 
     getNbIcons = () => {
-        fetch(process.env.REACT_APP_API_ENDPOINT + '/api')
+        fetch('/api')
             .then(res => res.json())
             .then((data) => {
                 if (!data.error && data.details["nb_images"] !== undefined) {
