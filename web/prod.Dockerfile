@@ -1,6 +1,7 @@
 FROM node:13.0.1-alpine
 
 ARG NODE_ENV
+ARG USE_S3
 
 COPY ./app /app
 

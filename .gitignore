@@ -1,4 +1,4 @@
 .vscode/
 web/app/node_modules/
-icons/*
-logs/*
+icons/
+logs/

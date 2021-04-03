@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: icons-visualizer
+  labels:
+    io.kompose.service: api
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: api
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: api
+    spec:
+      containers:
+        - image: flavienb/icons-visualizer-api:latest
+          name: api
+          ports:
+            - containerPort: 5000
+          imagePullPolicy: Always
+          resources: {}
+          volumeMounts:
+            - mountPath: /icons
+              name: api-pvc-icons
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: api-pvc-icons
+          persistentVolumeClaim:
+            claimName: api-pvc-icons
+            readOnly: true
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: api
+  namespace: icons-visualizer
+  name: api
+spec:
+  ports:
+    - port: 5000
+      targetPort: 5000
+  selector:
+    io.kompose.service: api
+status:
+  loadBalancer: {}

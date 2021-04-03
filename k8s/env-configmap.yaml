@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  CHOKIDAR_USEPOLLING: "true"
+  USE_S3: "true"
+kind: ConfigMap
+metadata:
+  name: env
+  namespace: icons-visualizer
