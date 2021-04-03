@@ -10,8 +10,6 @@ services:
       dockerfile: prod.Dockerfile
     image: flavienb/icons-visualizer-api:latest
     restart: always
-    ports:
-      - "5000:5000"
     volumes:
       - ./icons:/icons:ro
 
@@ -19,12 +17,21 @@ services:
     build:
       args:
         NODE_ENV: production
-        REACT_APP_API_ENDPOINT: ${REACT_APP_API_ENDPOINT}
       context: ./web
       dockerfile: prod.Dockerfile
     image: flavienb/icons-visualizer-web:latest
     restart: always
-    ports:
-      - "8080:80"
     env_file:
       - .env
+
+  # We set-up an NGINX to have a unique endpoint for app & api
+  nginx:
+    build:
+      context: nginx
+      dockerfile: prod.Dockerfile
+    image: flavienb/icons-visualizer-nginx:latest
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./logs:/var/log/nginx
