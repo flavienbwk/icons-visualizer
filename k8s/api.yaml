@@ -23,17 +23,14 @@ spec:
           ports:
             - containerPort: 5000
           imagePullPolicy: Always
+          env:
+            - name: FLASK_ENV
+              valueFrom:
+                configMapKeyRef:
+                  key: FLASK_ENV
+                  name: env
           resources: {}
-          volumeMounts:
-            - mountPath: /icons
-              name: api-pvc-icons
-              readOnly: true
       restartPolicy: Always
-      volumes:
-        - name: api-pvc-icons
-          persistentVolumeClaim:
-            claimName: api-pvc-icons
-            readOnly: true
 status: {}
 ---
 apiVersion: v1

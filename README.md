@@ -19,7 +19,9 @@ Written in Python (Flask RESTPlus / Swagger) and ReactJS.
 
 First, import the icons you want in the `icons/` directory.
 
-:warning: **The names of your files** are very important : the search engine is based on filenames to find keywords as you type the icon you're looking for in the UI searchbar.
+<center>
+:information_source: **The names of your files** are very important : the search engine is based on filenames to find keywords as you type the icon you're looking for in the UI searchbar.
+</center>
 
 ### Build for dev
 
@@ -48,10 +50,10 @@ I've used [Scaleway Kapsule](https://scaleway.com/kapsule) to perform my tests. 
     By default, images are tagged `flavienb/icons-visualizer-{api,web,nginx}:latest`. Edit it in `prod.docker-compose.yml` before building.
 
     ```bash
-    docker-compose -f prod.docker-compose.yml up --build -d
+    docker-compose -f prod.docker-compose.yml buid
     ```
 
-    Finally, docker push the 3 images
+    Finally, `docker push` the 3 images.
 
 2. Add a new `icons-visualizer` namespace
 
@@ -73,7 +75,7 @@ I've used [Scaleway Kapsule](https://scaleway.com/kapsule) to perform my tests. 
 4. Configure your Ingress app endpoint
 
     - **Define** the app endpoint in [k8s/nginx.yaml, line 51](./k8s/nginx.yaml#L51)
-    - **Define** the MinIO endpoint [on line 76](./k8s/minio.yaml#76)
+    - **Define** the MinIO endpoint in [k8s/minio.yaml, line 76](./k8s/minio.yaml#76)
 
     Deploy with :
 
