@@ -17,15 +17,14 @@ from utils.ApiResponse import ApiResponse
 app = Flask(__name__)
 api = Api(app, title=config.FLASK_SERVER_NAME, description=config.FLASK_SERVER_DESCRIPTION)
 
-print("Loading icon keywords...", flush=True)
 icons = Icons()
 icons.updateImages()
-print("Finished with {} icons. Starting...".format(len(icons.getImagesData())), flush=True)
 
 @api.route('/api')
 class Home(Resource):
     def get(self):
         apiResponse = ApiResponse()
+        icons.updateImages()
         apiResponse.setAll(False, "Everything's up and running", {
             "nb_images": len(icons.getImagesData())
         })
@@ -36,6 +35,7 @@ class Home(Resource):
 class Icon(Resource):
     def get(self, icon_hash):
         apiResponse = ApiResponse()
+        icons.updateImages()
         icon = icons.getImageData(icon_hash)
         if (icon):
             icon.update({"request": icon_hash})
@@ -57,7 +57,7 @@ class Icon(Resource):
         return apiResponse.getResponse()
 
 
-@app.route('/icon/<string:icon_hash>')
+@app.route('/api/file/<string:icon_hash>')
 def get_image(icon_hash):
     icon = icons.getImageData(icon_hash)
     if (icon):

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  
+  labels:
+    app: web
+  name: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - env:
+            - name: CHOKIDAR_USEPOLLING
+              valueFrom:
+                configMapKeyRef:
+                  key: CHOKIDAR_USEPOLLING
+                  name: env
+          image: flavienb/icons-visualizer-web:latest
+          name: web
+          ports:
+            - containerPort: 3000
+          imagePullPolicy: Always
+          resources: {}
+      restartPolicy: Always
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+    - port: 3000 # Port accessible inside cluster
+      targetPort: 3000 # Port to forward to inside the pod
+      protocol: TCP
+      name: http
+  selector:
+    app: web
+status:
+  loadBalancer: {}

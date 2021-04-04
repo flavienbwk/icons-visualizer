@@ -1,14 +1,20 @@
 from typing import Union, Dict, List
 import os
 import sys
+import time
+import traceback
 from operator import countOf
-from .utils import list_rglob_files
+from .utils import list_rglob_files, create_directory, remove_directory
+from .Minio import Minio
 
 sys.path.append('..')
 import config
 
 
-class Icons():
+CACHE_LAST_RUN = 0.0
+CACHE_EXPIRATION_INTERVAL = 60.0 # Minimum time (seconds) before re-processing image keywords
+
+class Icons:
 
     def __init__(self) -> None:
         self.abs_path = os.path.dirname(os.path.abspath(__file__))
@@ -65,29 +71,78 @@ class Icons():
         
         return keywords
 
-    def updateImages(self) -> int:
+    def downloadImagesFromS3(self) -> int:
         """
-        We look into /icons to find images to present
+        If USE_S3 is true, downloads all icons from the "icons"
+        bucket and save them under `/icons/s3`.
+
+        Returns:
+            int: The number of images successfuly saved.
+        """
+        nb_images_processed = 0
+        if config.USE_S3:
+            try:
+                minio = Minio()
+                remove_directory(config.ICONS_S3_DIRECTORY)
+                create_directory(config.ICONS_S3_DIRECTORY)
+                buckets = [ bucket.name for bucket in minio.client.list_buckets() ]
+                if "icons" in buckets:
+                    print("Downloading S3 files...", flush=True)
+                    objects = list(minio.client.list_objects("icons", recursive=True))
+                    filenames = [ item._object_name for item in objects ]
+                    for filename in filenames:
+                        dst_path = f"{config.ICONS_S3_DIRECTORY}/{filename}"
+                        minio.client.fget_object("icons", filename, dst_path)
+                    nb_images_processed = len(filenames)
+                    print(f"Finished downloading {nb_images_processed} S3 files.", flush=True)
+                else:
+                    minio.client.make_bucket("icons")
+            except Exception as e:
+                print(traceback.format_exc())
+                print("ERROR: Failed to retrieve files from Minio", e)
+        return nb_images_processed
+
+    def processImageKeywords(self):
+        """
+        We look into `/icons` to find images to present
         to the user and deduct its keywords for search.
 
         Returns:
             int: The number of images successfuly processed.
         """
-        self.keywords_images = [[], []]
-        self.images_data = {}
+        print("Loading icon keywords...", flush=True)
         nb_images_processed = 0
-        images = list_rglob_files(config.ICONS_DIRECTORY, [
-            "*.png",
-            "*.jpeg",
-            "*.jpg",
-            "*.gif",
-            "*.svg"
-        ])
+        images = list_rglob_files(config.ICONS_DIRECTORY, config.IMAGE_EXTENSIONS)
+        if config.USE_S3:
+            images = images + list_rglob_files(config.ICONS_S3_DIRECTORY, config.IMAGE_EXTENSIONS)
         if (len(images)):
             for image_details in images:
                 if (self.processImage(image_details)):
                     nb_images_processed+=1
+        print("Finished with {} icons.".format(
+            len(self.getImagesData())
+        ), flush=True)
         return nb_images_processed
+
+    def updateImages(self) -> int:
+        """
+        Will successively retrieve S3 images if enabled and
+        keywords of images in `/icons`.
+
+        Returns:
+            int: The number of images successfuly processed.
+        """
+        global CACHE_LAST_RUN
+        global CACHE_EXPIRATION_INTERVAL
+        
+        # Re-process keywords only after a specific period of time
+        if time.time() - CACHE_LAST_RUN > CACHE_EXPIRATION_INTERVAL:
+            CACHE_LAST_RUN = time.time()
+            self.keywords_images = [[], []]
+            self.images_data = {}
+            self.downloadImagesFromS3()
+            return self.processImageKeywords()
+        return 0
 
     def searchImages(self, query: str, limit: 50) -> List[str]:
         """

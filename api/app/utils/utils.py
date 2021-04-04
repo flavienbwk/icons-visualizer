@@ -1,7 +1,32 @@
 import os
+import shutil
 import hashlib
 from pathlib import Path
 
+def create_directory(path):
+    path = str(path)
+    if os.path.exists(path) is False:
+        try:
+            os.makedirs(path)
+        except OSError:
+            print("Failed to create directory {}".format(path))
+            return False
+        else:
+            print("Successfully created the directory {}".format(path))
+    return True
+    
+def remove_directory(path):
+    path = str(path)
+    if os.path.exists(path) is True:
+        try:
+            shutil.rmtree(path)
+        except Exception as e:
+            print(e)
+            print("Failed to remove directory {}".format(path))
+            return False
+        else:
+            print("Successfully removed the directory {}".format(path))
+    return True
 
 def list_rglob_files(source_dir, patterns: list, exclude_dirs: list = []):
     all_files = []
@@ -18,7 +43,7 @@ def list_rglob_files(source_dir, patterns: list, exclude_dirs: list = []):
             abs_path = str(path_data.absolute())
             files.append({
                 "id": hashlib.md5(abs_path.encode()).hexdigest(),
-                "parent": path_data.parent,
+                "parent": str(path_data.parent),
                 "path": abs_path,
                 "filename": basename,
                 "extension": extension.lstrip(".")

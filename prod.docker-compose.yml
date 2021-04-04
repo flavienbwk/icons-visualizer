@@ -1,51 +1,54 @@
-version: "3.3"
+version: "3"
 
 services:
 
   api:
-    build: ./api
-    image: flavienb/icons-visualizer-api:develop
+    build:
+      context: ./api
+      dockerfile: prod.Dockerfile
+    image: flavienb/icons-visualizer-api:latest
     restart: always
     env_file:
       - .env
     volumes:
-      - ./api/app:/app
       - ./icons:/icons:ro
     environment:
-      FLASK_ENV: "development"
+      FLASK_ENV: "production"
 
   web:
-    build: ./web
-    image: flavienb/icons-visualizer-web:develop
+    build:
+      args:
+        NODE_ENV: "production"
+      context: ./web
+      dockerfile: prod.Dockerfile
+    image: flavienb/icons-visualizer-web:latest
     restart: always
     env_file:
       - .env
-    volumes:
-      - ./web/app:/app
 
   # We set-up an NGINX to have a unique endpoint for app & api
   nginx:
     build:
       context: nginx
-      dockerfile: Dockerfile
-    image: flavienb/icons-visualizer-nginx:develop
+      dockerfile: prod.Dockerfile
+    image: flavienb/icons-visualizer-nginx:latest
     restart: always
     ports:
       - "8080:80"
     volumes:
-      - ./nginx/icons-visualizer.conf:/etc/nginx/conf.d/icons-visualizer.conf:ro
-      - ./logs:/var/log/nginx
+      - nginx_logs:/var/log/nginx
 
   # Easy way to import its icons through a secured web interface
   minio:
     image: minio/minio:RELEASE.2021-03-17T02-33-02Z
     command: server /data
     ports:
-      - "9000:9000"
+        - "9000:9000"
     volumes:
-      - minio_data:/data
+        - minio_data:/data
     env_file:
       - .env
 
 volumes:
   minio_data:
+  nginx_logs:

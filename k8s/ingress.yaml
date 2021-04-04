@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    name: ingress
+  namespace: icons-visualizer
+  name: ingress
+spec:
+  rules:
+  - host: icons.15abd9b3-0e5a-488d-bd4f-f1ba171102d1.nodes.k8s.fr-par.scw.cloud
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx
+            port:
+              number: 80
+  - host: minio.15abd9b3-0e5a-488d-bd4f-f1ba171102d1.nodes.k8s.fr-par.scw.cloud
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: minio
+            port:
+              number: 9000
