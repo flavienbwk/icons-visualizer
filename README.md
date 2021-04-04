@@ -19,9 +19,7 @@ Written in Python (Flask RESTPlus / Swagger) and ReactJS.
 
 First, import the icons you want in the `icons/` directory.
 
-<center>
-:information_source: **The names of your files** are very important : the search engine is based on filenames to find keywords as you type the icon you're looking for in the UI searchbar.
-</center>
+:information_source: **The name of your files** are very important : the search engine is based on filenames to find keywords as you type the icon you're looking for in the UI searchbar.
 
 ### Build for dev
 
