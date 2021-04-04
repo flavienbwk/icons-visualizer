@@ -1,7 +1,10 @@
 apiVersion: v1
 data:
   CHOKIDAR_USEPOLLING: "true"
+  FLASK_ENV: "production"
   USE_S3: "true"
+  MINIO_IS_HTTPS: "false"
+  MINIO_ENDPOINT: minio:9000
   MINIO_ACCESS_KEY: minio
   MINIO_SECRET_KEY: minio123
 kind: ConfigMap

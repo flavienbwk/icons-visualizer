@@ -50,7 +50,7 @@ I've used [Scaleway Kapsule](https://scaleway.com/kapsule) to perform my tests. 
     By default, images are tagged `flavienb/icons-visualizer-{api,web,nginx}:latest`. Edit it in `prod.docker-compose.yml` before building.
 
     ```bash
-    docker-compose -f prod.docker-compose.yml buid
+    docker-compose -f prod.docker-compose.yml build
     ```
 
     Finally, `docker push` the 3 images.
@@ -74,8 +74,7 @@ I've used [Scaleway Kapsule](https://scaleway.com/kapsule) to perform my tests. 
 
 4. Configure your Ingress app endpoint
 
-    - **Define** the app endpoint in [k8s/nginx.yaml, line 51](./k8s/nginx.yaml#L51)
-    - **Define** the MinIO endpoint in [k8s/minio.yaml, line 76](./k8s/minio.yaml#76)
+    - **Define** the app and MinIO's endpoint in [k8s/ingress.yaml, line 10 and 20](./k8s/ingress.yaml#L10)
 
     Deploy with :
 

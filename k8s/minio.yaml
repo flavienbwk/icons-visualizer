@@ -3,23 +3,24 @@ kind: Deployment
 metadata:
   namespace: icons-visualizer
   labels:
-    io.kompose.service: minio
+    app: minio
   name: minio
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: minio
+      app: minio
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        io.kompose.service: minio
+        app: minio
     spec:
       containers:
         - image: minio/minio:RELEASE.2021-03-17T02-33-02Z
           name: minio
+          args: ["server", "/data"]
           env:
             - name: MINIO_ACCESS_KEY
               valueFrom:
@@ -33,64 +34,48 @@ spec:
                   name: env
           ports:
             - containerPort: 9000
+          # Readiness probe detects situations when MinIO server instance
+          # is not ready to accept traffic. Kubernetes doesn't forward
+          # traffic to the pod while readiness checks fail.
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: 9000
+            initialDelaySeconds: 120
+            periodSeconds: 20
+          # Liveness probe detects situations where MinIO server instance
+          # is not working properly and needs restart. Kubernetes automatically
+          # restarts the pods if liveness checks fail.
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: 9000
+            initialDelaySeconds: 120
+            periodSeconds: 20
           imagePullPolicy: Always
           resources: {}
           volumeMounts:
-            - mountPath: /icons
+            - mountPath: /data
               name: minio-pvc
-              readOnly: true
       restartPolicy: Always
       volumes:
         - name: minio-pvc
           persistentVolumeClaim:
             claimName: minio-pvc
-            readOnly: true
 status: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    io.kompose.service: minio
+    app: minio
   namespace: icons-visualizer
   name: minio
 spec:
   ports:
     - port: 9000
       targetPort: 9000
+      protocol: TCP
   selector:
-    io.kompose.service: minio
-status:
-  loadBalancer: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    io.kompose.service: minio
-  name: minio
-spec:
-  ports:
-    - port: 9000
-      targetPort: 9000
-  selector:
-    io.kompose.service: minio
-status:
-  loadBalancer: {}
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: minio
-spec:
-  rules:
-  - host: minio.15abd9b3-0e5a-488d-bd4f-f1ba171102d1.nodes.k8s.fr-par.scw.cloud
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: minio
-            port:
-              number: 80
+    # Looks for labels `app:minio` in the namespace and applies the spec
+    app: minio

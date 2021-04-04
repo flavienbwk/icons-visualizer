@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   
   labels:
-    io.kompose.service: web
+    app: web
   name: web
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: web
+      app: web
   strategy: {}
   template:
     metadata:
       labels:
-        io.kompose.service: web
+        app: web
     spec:
       containers:
         - env:
@@ -36,7 +36,7 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    io.kompose.service: web
+    app: web
   name: web
 spec:
   ports:
@@ -45,6 +45,6 @@ spec:
       protocol: TCP
       name: http
   selector:
-    io.kompose.service: web
+    app: web
 status:
   loadBalancer: {}

@@ -3,19 +3,19 @@ kind: Deployment
 metadata:
   namespace: icons-visualizer
   labels:
-    io.kompose.service: api
+    app: api
   name: api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: api
+      app: api
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        io.kompose.service: api
+        app: api
     spec:
       containers:
         - image: flavienb/icons-visualizer-api:latest
@@ -29,6 +29,31 @@ spec:
                 configMapKeyRef:
                   key: FLASK_ENV
                   name: env
+            - name: USE_S3
+              valueFrom:
+                configMapKeyRef:
+                  key: USE_S3
+                  name: env
+            - name: MINIO_IS_HTTPS
+              valueFrom:
+                configMapKeyRef:
+                  key: MINIO_IS_HTTPS
+                  name: env
+            - name: MINIO_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  key: MINIO_ENDPOINT
+                  name: env
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                configMapKeyRef:
+                  key: MINIO_ACCESS_KEY
+                  name: env
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                configMapKeyRef:
+                  key: MINIO_SECRET_KEY
+                  name: env
           resources: {}
       restartPolicy: Always
 status: {}
@@ -37,7 +62,7 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    io.kompose.service: api
+    app: api
   namespace: icons-visualizer
   name: api
 spec:
@@ -45,6 +70,6 @@ spec:
     - port: 5000
       targetPort: 5000
   selector:
-    io.kompose.service: api
+    app: api
 status:
   loadBalancer: {}

@@ -14,4 +14,4 @@ WORKDIR /app
 COPY ./app /app
 
 # Run WSGI server with 3 workers
-ENTRYPOINT [ "gunicorn", "-w", "3", "-b", "0.0.0.0:5000", "app:app" ]
+ENTRYPOINT [ "gunicorn", "-b", "0.0.0.0:5000", "app:app" ]
