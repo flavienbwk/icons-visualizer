@@ -12,7 +12,7 @@ import config
 
 
 CACHE_LAST_RUN = 0.0
-CACHE_EXPIRATION_INTERVAL = 120.0 # Seconds before re-processing images keywords
+CACHE_EXPIRATION_INTERVAL = 60.0 # Minimum time (seconds) before re-processing image keywords
 
 class Icons:
 

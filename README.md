@@ -74,14 +74,20 @@ I've used [Scaleway Kapsule](https://scaleway.com/kapsule) to perform my tests. 
 
 4. Configure your Ingress app endpoint
 
-    - **Define** the app and MinIO's endpoint in [k8s/ingress.yaml, line 10 and 20](./k8s/ingress.yaml#L10)
+    - **Define** the app and MinIO endpoints in [k8s/ingress.yaml, line 10 and 20](./k8s/ingress.yaml#L10)
+    - **Check** the env variables in [k8s/env-configmap.yaml](./k8s/env-configmap.yaml)
+    - **Check** the PersistentVolumeClaim if you're not using Scaleway, in [k8s/minio-pvc.yaml](./k8s/minio-pvc.yaml)
 
     Deploy with :
 
     ```bash
-    kubectl apply -f k8s --namespace icons-visualizer
+    kubectl apply -f ./k8s --namespace icons-visualizer
     ```
 
-You can now access the UI on your Kubernetes instance
+5. Add icons
 
-Don't forget to import your icons through MinIO !
+    Connect to the MinIO interface and add your icons in the `icons` bucket.
+
+    Start a new search in the Icons Visualizer UI and enjoy !
+
+    > :information_source: The API will look up for new icons in S3 and file-system [every minute](./api/app/utils/Icons.py#L15).
