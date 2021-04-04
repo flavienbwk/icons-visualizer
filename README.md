@@ -9,7 +9,7 @@
     </a>
 </p>
 
-A quick and simple UI and API to search and display icons. Can be used in an offline environment thanks to Docker.
+A quick and simple UI and API to search and display icons. Can be used in an offline environment thanks to Docker. Database-free.
 
 ![Interface example](./interface.png)
 
@@ -17,9 +17,9 @@ Written in Python (Flask RESTPlus / Swagger) and ReactJS.
 
 ## Get started
 
-First, import the icons you want in the `icons/` directory.
+Import the icons you want in the `icons/` directory.
 
-:information_source: **The name of your files** are very important : the search engine is based on filenames to find keywords as you type the icon you're looking for in the UI searchbar.
+:information_source: **The name of your files** are very important : the search engine is based on filenames to find search keywords.
 
 ### Build for dev
 
@@ -41,17 +41,23 @@ You can access the UI at `localhost:8080`
 
 I pretend you have here your K8S instance configured to be accessed by your `kubectl` CLI.
 
-I've used [Scaleway Kapsule](https://scaleway.com/kapsule) to perform my tests. This is an easy way to have a Kubernetes cluster ready in some seconds.
+I've used [Scaleway Kapsule](https://www.scaleway.com/en/kubernetes-kapsule) to perform my tests. This is an easy way to have a Kubernetes cluster quickly ready.
 
-1. Building production images
+1. Building production images (optional)
 
-    By default, images are tagged `flavienb/icons-visualizer-{api,web,nginx}:latest`. Edit it in `prod.docker-compose.yml` before building.
+    Images are tagged `flavienb/icons-visualizer-{api,web,nginx}:latest` by default. Edit it in `prod.docker-compose.yml` before building.
+
+    :information_source: You might be interested in pushing your images in a private registry (e.g: [Scaleway's Container Registry service](https://www.scaleway.com/en/container-registry/)).
 
     ```bash
     docker-compose -f prod.docker-compose.yml build
     ```
 
-    Finally, `docker push` the 3 images.
+    Finally, `docker push` the 3 images and edit K8S' configurations :
+
+    - [k8s/web.yaml, line 26](k8s/web.yaml#L26)
+    - [k8s/api.yaml, line 21](k8s/api.yaml#L21)
+    - [k8s/nginx.yaml, line 21](k8s/nginx.yaml#L21)
 
 2. Add a new `icons-visualizer` namespace
 

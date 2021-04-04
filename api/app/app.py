@@ -24,7 +24,6 @@ icons.updateImages()
 class Home(Resource):
     def get(self):
         apiResponse = ApiResponse()
-        icons.updateImages()
         apiResponse.setAll(False, "Everything's up and running", {
             "nb_images": len(icons.getImagesData())
         })
@@ -35,7 +34,6 @@ class Home(Resource):
 class Icon(Resource):
     def get(self, icon_hash):
         apiResponse = ApiResponse()
-        icons.updateImages()
         icon = icons.getImageData(icon_hash)
         if (icon):
             icon.update({"request": icon_hash})
@@ -50,6 +48,7 @@ class Icon(Resource):
 class Icon(Resource):
     def get(self, query, limit):
         apiResponse = ApiResponse()
+        icons.updateImages()
         icons_found = icons.searchImages(query, limit)
         apiResponse.setError(False if (len(icons_found)) else True)
         apiResponse.setMessage(str(len(icons_found)) + " images found for your query" if (len(icons_found)) else "No image found for that query")

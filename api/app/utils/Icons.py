@@ -36,7 +36,7 @@ class Icons:
                 False otherwise.
         """
         keywords = self.getKeywordsFromFileInfo(image_info)
-        if (len(keywords)):
+        if len(keywords):
             self.keywords_images[0].append(keywords)
             self.keywords_images[1].append({
                 "id": image_info["id"],
@@ -114,10 +114,13 @@ class Icons:
         nb_images_processed = 0
         images = list_rglob_files(config.ICONS_DIRECTORY, config.IMAGE_EXTENSIONS)
         if config.USE_S3:
-            images = images + list_rglob_files(config.ICONS_S3_DIRECTORY, config.IMAGE_EXTENSIONS)
-        if (len(images)):
+            images += list_rglob_files(config.ICONS_S3_DIRECTORY, config.IMAGE_EXTENSIONS)
+        # Checking if there's a need of re-processing image keywords
+        if len(images) and len(images) != len(self.images_data):
+            self.keywords_images = [[], []]
+            self.images_data = {}
             for image_details in images:
-                if (self.processImage(image_details)):
+                if self.processImage(image_details):
                     nb_images_processed+=1
         print("Finished with {} icons.".format(
             len(self.getImagesData())
@@ -138,8 +141,6 @@ class Icons:
         # Re-process keywords only after a specific period of time
         if time.time() - CACHE_LAST_RUN > CACHE_EXPIRATION_INTERVAL:
             CACHE_LAST_RUN = time.time()
-            self.keywords_images = [[], []]
-            self.images_data = {}
             self.downloadImagesFromS3()
             return self.processImageKeywords()
         return 0
