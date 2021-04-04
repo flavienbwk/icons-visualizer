@@ -64,7 +64,7 @@ I've used [Scaleway Kapsule](https://scaleway.com/kapsule) to perform my tests. 
     You have 4 options to see your icons on Kubernetes :
 
     - Create a `PersistentVolume` with `spec.local` pointing to a path on a node and import your icons inside (requires an SSH access to this node)
-    - Use a remote NFS server (not supported yet by Icons Visualizer)
+    - Use a remote NFS server
     - Copy all of your icons in your Docker image
     - Use a S3 server such as MinIO and import your pictures via a web interface
 
