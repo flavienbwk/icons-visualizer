@@ -24,6 +24,7 @@ icons.updateImages()
 class Home(Resource):
     def get(self):
         apiResponse = ApiResponse()
+        icons.updateImages()
         apiResponse.setAll(False, "Everything's up and running", {
             "nb_images": len(icons.getImagesData())
         })
@@ -34,6 +35,7 @@ class Home(Resource):
 class Icon(Resource):
     def get(self, icon_hash):
         apiResponse = ApiResponse()
+        icons.updateImages()
         icon = icons.getImageData(icon_hash)
         if (icon):
             icon.update({"request": icon_hash})

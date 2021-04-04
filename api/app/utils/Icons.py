@@ -164,7 +164,6 @@ class Icons:
 
         # Browse each file keywords and compute their matching
         # score for the search query submitted.
-        self.updateImages()
         for key in range(0, len(self.keywords_images[0])):
             score = 0
             keywords = self.keywords_images[0][key]
